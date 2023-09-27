@@ -1,11 +1,14 @@
 const express = require('express');
 const app = express();
+const bodyParser = require('body-parser'); // Import body-parser
 const port = 3000;
 
 // Prisma client configurations 
 const { PrismaClient } = require('@prisma/client');
-
 const prisma = new PrismaClient();
+
+// Use body-parser middleware to parse JSON
+app.use(bodyParser.json());
 
 // Check if there are any users in the database
 async function checkUsers() {
@@ -47,7 +50,7 @@ checkUsers()
   .catch((error) => console.error('Error checking users:', error))
   .finally(() => prisma.$disconnect());
 
-// Ophalen van alle gebruikers
+// Getting all the users
 app.get('/', async (req, res) => {
   try {
     const users = await prisma.user.findMany();
@@ -58,6 +61,27 @@ app.get('/', async (req, res) => {
   }
 });
 
+// Endpoint to add a new user via a POST request
+app.post('/add-user', async (req, res) => {
+  try {
+    const userData = req.body; // Assuming request body contains user data
+    const newUser = await prisma.user.create({
+      data: {
+        name: userData.name,
+        email: userData.email,
+        age: userData.age
+      }
+    });
+    res.json(newUser);
+  } catch (error) {
+    console.error('Error adding user:', error);
+    res.status(500).json({ error: 'Error adding user', details: error.message });
+  }
+});
+
+// Endpoint to delete a user via a DELETE request
+
+// App is working on port 3000 
 app.listen(port, () => {
   console.log('Luisteren op poort: ' + port);
 });
