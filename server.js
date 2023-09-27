@@ -80,6 +80,24 @@ app.post('/add-user', async (req, res) => {
 });
 
 // Endpoint to delete a user via a DELETE request
+app.delete('/delete-user/:id', async (req, res) => {
+  const userId = parseInt(req.params.id);
+
+  try {
+    // Use Prisma to delete the user by ID
+    const deletedUser = await prisma.user.delete({
+      where: {
+        id: userId,
+      },
+    });
+
+    res.json(deletedUser);
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).json({ error: 'Error deleting user', details: error.message });
+  }
+});
+
 
 // App is working on port 3000 
 app.listen(port, () => {
