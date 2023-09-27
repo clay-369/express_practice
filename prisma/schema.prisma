@@ -17,3 +17,8 @@ model User {
   age     Int
 }
 
+model Animal {
+  id Int @id @default(autoincrement())
+  name String
+  age Int
+}
